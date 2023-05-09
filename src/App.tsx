@@ -25,6 +25,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen'
 
+import { NavigationContainer } from '@react-navigation/native';
+
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -96,6 +98,14 @@ function App(): JSX.Element {
   )
 }
 
+function WrappedApp() {
+  return(
+    <NavigationContainer>
+      <App />
+    </NavigationContainer>
+  )
+}
+
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
@@ -115,4 +125,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default App
+export default WrappedApp
