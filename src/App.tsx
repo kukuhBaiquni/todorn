@@ -1,127 +1,57 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react'
-import type {PropsWithChildren} from 'react'
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native'
+import { store } from './store'
+import { Provider } from 'react-redux'
+import { View, StyleSheet, Dimensions, Text } from 'react-native'
+import Toast, { ToastConfigParams } from 'react-native-toast-message'
+import colors from './constants/colors'
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen'
+import Navigation from './navigation'
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native'
+import 'react-native-gesture-handler'
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const { width } = Dimensions.get('screen')
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark'
+function ErrorToast({ text1, text2 }: ToastConfigParams<object>) {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.titleText}>{text1}</Text>
+      <Text style={styles.descText}>{text2}</Text>
     </View>
   )
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark'
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  }
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
+const toastConfig = {
+  e: (props: ToastConfigParams<object>) => ErrorToast(props),
 }
 
 function WrappedApp() {
-  return(
+  return (
     <NavigationContainer>
-      <App />
+      <Provider store={store}>
+        <Navigation />
+      </Provider>
+      <Toast config={toastConfig} />
     </NavigationContainer>
   )
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    height: 70,
+    width: width * 0.95,
+    backgroundColor: colors.RED,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    borderRadius: 5,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  titleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.WHITE,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  descText: {
+    color: colors.WHITE,
   },
 })
 
