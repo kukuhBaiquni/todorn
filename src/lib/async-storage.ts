@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-interface Props {
+type Props = {
   key: string
   data: string
   state: 'SET' | 'GET' | 'DELETE'

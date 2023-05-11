@@ -2,7 +2,7 @@ import React from 'react'
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import colors from '../../constants/colors'
 
-interface Props {
+type Props = {
   onPress?: () => Promise<void>
   text: string
   isLoading: boolean

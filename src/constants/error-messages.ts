@@ -1,13 +1,9 @@
-export type ErrorMessage = {
-  409: string
-  422: string
+const fallback = 'We are working on getting this fixed as soon as we can'
+export default function errType(num: number) {
+  return (
+    {
+      409: 'Name has been taken! Please choose another one',
+      422: 'Name too long/short',
+    }[num] || fallback
+  )
 }
-
-const errType: ErrorMessage = {
-  409: 'Name has been taken! Please choose another one',
-  422: 'Name too long',
-}
-
-export default errType
-
-export const fallback = 'We are working on getting this fixed as soon as we can'

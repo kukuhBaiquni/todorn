@@ -1,9 +1,10 @@
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack'
+import { RouteProp } from '@react-navigation/native'
 import React from 'react'
 import Login from './pages/login'
 import Main from './pages/main'
 
-export type NavigationParams = {
+type NavigationParams = {
   Login: undefined
   Main: { new: boolean } | undefined
 }
@@ -11,8 +12,11 @@ export type NavigationParams = {
 type LoginNavigationProp = StackNavigationProp<NavigationParams, 'Login'>
 type MainNavigationProp = StackNavigationProp<NavigationParams, 'Main'>
 
-export type LoginProps = { navigation: LoginNavigationProp }
-export type MainProps = { navigation: MainNavigationProp }
+type LoginRouteProp = RouteProp<NavigationParams, 'Login'>
+type MainRouteProp = RouteProp<NavigationParams, 'Main'>
+
+export type LoginProps = { navigation: LoginNavigationProp; route: LoginRouteProp }
+export type MainProps = { navigation: MainNavigationProp; route: MainRouteProp }
 
 const Stack = createStackNavigator<NavigationParams>()
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import colors from '../../constants/colors'
 
-interface Props {
+type Props = {
   isError?: boolean | undefined
   errorMessage?: string | undefined
   borderless?: boolean | undefined
@@ -10,10 +10,22 @@ interface Props {
   onBlur?: () => void | undefined
   onChangeText?: (text: string) => void
   value: string
+  placeholder: string
+  maxLength?: number
 }
 
 export default function Input(props: Props) {
-  const { isError, errorMessage, borderless, onEnter, onBlur, onChangeText, value } = props
+  const {
+    isError,
+    errorMessage,
+    borderless,
+    onEnter,
+    onBlur,
+    onChangeText,
+    value,
+    placeholder,
+    maxLength,
+  } = props
   const styles = getStyles(borderless)
 
   return (
@@ -22,11 +34,11 @@ export default function Input(props: Props) {
         placeholderTextColor={colors.BLACK}
         style={styles.textInput}
         cursorColor={colors.BLACK}
-        placeholder="Your name.."
+        placeholder={placeholder}
         underlineColorAndroid="transparent"
         numberOfLines={1}
         multiline={false}
-        maxLength={18}
+        maxLength={maxLength || 18}
         keyboardType="visible-password"
         onSubmitEditing={onEnter}
         onBlur={onBlur}

@@ -8,7 +8,7 @@ import Input from '../components/form/input'
 import Button from '../components/common/button'
 import { useRegisterUserMutation } from '../services/register'
 import db from '../lib/async-storage'
-import errType, { fallback, ErrorMessage } from '../constants/error-messages'
+import errType from '../constants/error-messages'
 
 const { height, width } = Dimensions.get('screen')
 
@@ -16,20 +16,21 @@ export default function Login({ navigation }: LoginProps) {
   const [textValue, setTextValue] = useState('')
   const [isPreload, setIsPreload] = useState(false)
 
-  const [registerUser, { isLoading, isError, isSuccess, error, data }] = useRegisterUserMutation()
+  const [registerUser, mutationRegister] = useRegisterUserMutation()
 
   const onSubmit = async () => {
-    await registerUser({ name: textValue })
+    if (textValue) await registerUser({ name: textValue })
     Keyboard.dismiss()
   }
 
+  /**
+   * If user already registered, it will
+   * automatically redirect to main page
+   */
+
   useEffect(() => {
     const getDb = async () => {
-      const id = await db({
-        key: 'userid',
-        state: 'GET',
-        data: '',
-      })
+      const id = await db({ key: 'userid', state: 'GET', data: '' })
       if (id) {
         navigation.replace('Main')
       } else {
@@ -39,43 +40,54 @@ export default function Login({ navigation }: LoginProps) {
     getDb().catch(console.error)
   }, [navigation])
 
+  /**
+   * WHen registration process is done
+   * user will be redirected to main page
+   */
+
   useEffect(() => {
-    if (isSuccess && !isLoading) {
-      console.log('masuk')
+    if (mutationRegister.isSuccess && !mutationRegister.isLoading) {
       let id: string
-      if (data?._id) {
-        id = data._id
+      if (mutationRegister.data?._id) {
+        id = mutationRegister.data._id
       }
       const setDb = async () => {
-        await db({
-          key: 'userid',
-          data: id,
-          state: 'SET',
-        })
+        await db({ key: 'userid', data: id, state: 'SET' })
       }
       setDb().catch(console.error)
-      navigation.replace('Main', {
+      navigation.navigate('Main', {
         new: true,
       })
     }
-  }, [isSuccess, isLoading, navigation, data?._id])
+  }, [
+    mutationRegister.isSuccess,
+    mutationRegister.isLoading,
+    navigation,
+    mutationRegister.data?._id,
+  ])
+
+  /**
+   * This effect run when some error happening during
+   * registration process
+   */
 
   useEffect(() => {
-    if (isError && !isLoading && !isSuccess) {
-      let message = ''
-      if (errType[error]) {
-        message = errType[error]
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    if (mutationRegister.isError && !mutationRegister.isLoading && !mutationRegister.isSuccess) {
+      const err = mutationRegister.error as number
       Toast.show({
         type: 'e',
         text1: 'Something Wrong!',
-        text2: message || fallback,
+        text2: errType(err),
         position: 'top',
         topOffset: 10,
       })
     }
-  }, [isError, isLoading, error, isSuccess])
+  }, [
+    mutationRegister.isError,
+    mutationRegister.isLoading,
+    mutationRegister.error,
+    mutationRegister.isSuccess,
+  ])
 
   return (
     <Layout>
@@ -88,8 +100,8 @@ export default function Login({ navigation }: LoginProps) {
           <View style={styles.titleWrapper}>
             <Text style={styles.title}>Welcome,</Text>
             <Text style={styles.question}>what is your name?</Text>
-            <Input value={textValue} onChangeText={setTextValue} />
-            <Button isLoading={isLoading} text="Start now!" onPress={onSubmit} />
+            <Input placeholder="Your name..." value={textValue} onChangeText={setTextValue} />
+            <Button isLoading={mutationRegister.isLoading} text="Start now!" onPress={onSubmit} />
           </View>
         </View>
       )}
