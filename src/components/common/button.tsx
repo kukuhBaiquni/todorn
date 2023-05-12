@@ -6,11 +6,13 @@ type Props = {
   onPress?: () => Promise<void>
   text: string
   isLoading: boolean
+  type?: 'primary' | 'danger'
+  width?: string | number | undefined
 }
 
 export default function Button(props: Props) {
-  const { onPress, text, isLoading } = props
-  const styles = getStyles(isLoading)
+  const { onPress, text, isLoading, type, width } = props
+  const styles = getStyles(isLoading, type === 'danger', width)
 
   return (
     <TouchableOpacity disabled={isLoading} onPress={onPress} style={styles.nextButton}>
@@ -23,15 +25,16 @@ export default function Button(props: Props) {
   )
 }
 
-function getStyles(isLoading: boolean) {
+function getStyles(isLoading: boolean, isDanger: boolean, width: string | number | undefined) {
   return StyleSheet.create({
     nextButton: {
-      backgroundColor: isLoading ? colors.GRAY : colors.BLUE,
+      backgroundColor: isLoading ? colors.GRAY : isDanger ? colors.RED : colors.BLUE,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 5,
+      borderRadius: width ? 0 : 5,
       height: 50,
       marginTop: 15,
+      width: width,
     },
     buttonText: {
       fontSize: 20,

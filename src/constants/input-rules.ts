@@ -1,0 +1,7 @@
+export default {
+  USER_NAME_MAX_LENGTH: 18,
+
+  TODO_NAME_MAX_LENGTH: 24,
+
+  TODO_LIST_NAME_MAX_LENGTH: 24,
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   View,
   Text,
@@ -7,30 +7,44 @@ import {
   TouchableOpacity,
   BackHandler,
   FlatList,
+  ActivityIndicator,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import db from '../lib/async-storage'
 import colors from '../constants/colors'
-import { useGetTodosQuery } from '../services/todo'
+import { useGetTodosQuery, useCreateTodoMutation } from '../services/todo'
 import { MainProps } from '../navigation'
 import showAlert from '../helpers/show-alert'
-import commonFormat from '../helpers/date-format'
-import Input from '../components/form/input'
+import TodoCard from '../components/data-entry/todo-card'
+import NoData from '../components/common/no-data'
+import errType from '../constants/error-messages'
+import ModalInput from '../components/form/modal-input'
+import { useIsFocused } from '@react-navigation/native'
 
 const { width, height } = Dimensions.get('screen')
-const arr = Array.from({ length: 120 }, (_, index) => ({ no: index }))
 
-export default function Main({ navigation, route }: MainProps) {
+export default function Main({ route }: MainProps) {
+  const isFocused = useIsFocused()
   const isNew = route?.params?.new
   const [userId, setUserId] = useState('')
   const [textValue, setTextValue] = useState('')
-  const { isLoading, isError, isSuccess, error, data } = useGetTodosQuery(
-    { id: userId },
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const { isLoading, isError, isSuccess, error, data, refetch } = useGetTodosQuery(
+    { userId },
     { skip: !userId },
   )
 
-  useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', showAlert)
+  const [createTodo, createTodoMutation] = useCreateTodoMutation()
 
+  useEffect(() => {
+    if (isFocused) {
+      BackHandler.addEventListener('hardwareBackPress', showAlert)
+    } else {
+      BackHandler.removeEventListener('hardwareBackPress', showAlert)
+    }
+  }, [isFocused])
+
+  useEffect(() => {
     const getDb = async () => {
       const id = await db({
         key: 'userid',
@@ -42,58 +56,75 @@ export default function Main({ navigation, route }: MainProps) {
       }
     }
     getDb().catch(console.error)
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', showAlert)
-    }
   }, [])
 
-  const removeDb = async () => {
-    await db({
-      key: '',
-      data: '',
-      state: 'DELETE',
-    })
-    navigation.replace('Login')
+  const submitTodo = async () => {
+    if (textValue) await createTodo({ name: textValue, owner: userId })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const openBottomSheet = () => {}
-  const snapPoints = useMemo(() => ['20%', '80%', '90%'], [])
-  console.log(data)
+  useEffect(() => {
+    // When create todo process is success it will run this code
+    const isCreateTodoError =
+      !createTodoMutation.isSuccess && createTodoMutation.isError && !createTodoMutation.isLoading
+    const isSuccess =
+      createTodoMutation.isSuccess && !createTodoMutation.isError && !createTodoMutation.isLoading
+    if (isSuccess) {
+      setTextValue('')
+      setIsModalVisible(false)
+    }
+
+    // When create todo or get todo process is failed it will run this code
+    if (isCreateTodoError || isError) {
+      const err = (createTodoMutation.error as number) || (error as number)
+      Toast.show({
+        type: 'e',
+        text1: 'Something Wrong!',
+        text2: errType(err),
+        position: 'top',
+        topOffset: 10,
+      })
+    }
+  }, [
+    createTodoMutation.isSuccess,
+    createTodoMutation.isError,
+    createTodoMutation.isLoading,
+    createTodoMutation.error,
+    error,
+    isError,
+  ])
+
+  const toggleModal = () => setIsModalVisible((e) => !e)
+
+  const isNoData = !data?.length && !isLoading && isSuccess
+
   return (
     <View style={styles.container}>
-      {/* <Input
-        onChangeText={setTextValue}
-        value={textValue}
-        borderless={true}
-        placeholder="Create todo"
-        maxLength={108}
-      /> */}
       <View style={styles.welcomeBoard}>
-        <Text style={styles.welcomeText}>Welcome{isNew ? '' : ' back'},</Text>
-        <Text style={styles.captionText}>You can start creating todos now!</Text>
+        <View>
+          <Text style={styles.welcomeText}>Welcome{isNew ? '' : ' back'},</Text>
+          <Text style={styles.captionText}>You can start creating todos now!</Text>
+        </View>
+        {(isLoading || createTodoMutation.isLoading) && <ActivityIndicator color={colors.WHITE} />}
       </View>
+      {isNoData && <NoData />}
       <FlatList
-        data={arr}
-        keyExtractor={(item) => item.no.toString()}
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.todoCard}>
-              <View>
-                <Text style={styles.todoTitleText}>Item {item.no}</Text>
-                <Text style={{ color: colors.BLUE }}>13 item(s)</Text>
-              </View>
-              <Text style={{ color: colors.BLACK, fontSize: 12 }}>{commonFormat(new Date())}</Text>
-            </View>
-          )
-        }}
+        data={data}
+        onRefresh={refetch}
+        refreshing={isLoading}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => <TodoCard {...item} />}
       />
-      <View style={styles.bottomAction}>
-        <TouchableOpacity style={styles.buttonCircle} onPress={openBottomSheet}>
-          <Text style={styles.plusText}>+</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.buttonCircle} onPress={toggleModal}>
+        <Text style={styles.plusText}>+</Text>
+      </TouchableOpacity>
+      <ModalInput
+        isVisible={isModalVisible}
+        value={textValue}
+        onChangeText={setTextValue}
+        toggleModal={toggleModal}
+        onSubmit={submitTodo}
+        isLoading={createTodoMutation.isLoading}
+      />
     </View>
   )
 }
@@ -107,8 +138,10 @@ const styles = StyleSheet.create({
     height: height * 0.1,
     width,
     backgroundColor: colors.BLUE,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
+    flexDirection: 'row',
   },
   welcomeText: {
     color: colors.WHITE,
@@ -118,31 +151,10 @@ const styles = StyleSheet.create({
   captionText: {
     color: colors.WHITE,
   },
-  todoCard: {
-    height: 60,
-    flexDirection: 'row',
-    borderBottomColor: colors.GRAY,
-    borderBottomWidth: 1,
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    alignItems: 'center',
-  },
-  todoTitleText: {
-    color: colors.BLACK,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  bottomAction: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    height: 100,
-    width,
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   buttonCircle: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 10,
     height: 80,
     width: 80,
     backgroundColor: colors.BLUE,

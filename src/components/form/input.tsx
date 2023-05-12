@@ -31,14 +31,14 @@ export default function Input(props: Props) {
   return (
     <View>
       <TextInput
-        placeholderTextColor={colors.BLACK}
+        placeholderTextColor={borderless ? colors.SEMI_WHITE : colors.BLACK}
         style={styles.textInput}
         cursorColor={colors.BLACK}
         placeholder={placeholder}
         underlineColorAndroid="transparent"
         numberOfLines={1}
         multiline={false}
-        maxLength={maxLength || 18}
+        maxLength={maxLength || 24}
         keyboardType="visible-password"
         onSubmitEditing={onEnter}
         onBlur={onBlur}
@@ -53,14 +53,14 @@ export default function Input(props: Props) {
 function getStyles(borderless: boolean | undefined) {
   return StyleSheet.create({
     textInput: {
-      borderWidth: borderless ? 0 : 2,
+      borderWidth: borderless ? 0 : 1,
       borderColor: colors.BLACK,
       color: colors.BLACK,
       marginTop: 5,
-      borderRadius: 5,
-      fontSize: 24,
+      borderRadius: borderless ? 0 : 5,
+      fontSize: borderless ? 24 : 16,
       paddingHorizontal: 12,
-      paddingVertical: 8,
+      paddingVertical: borderless ? 16 : 8,
       backgroundColor: borderless ? colors.WHITE : 'transparent',
     },
     errorMessage: {

@@ -5,4 +5,6 @@ export default {
   WHITE: '#ffffff',
   RED: '#ff3636',
   GRAY: '#b0b0b0',
+  SEMI_WHITE: '#e0e0e0',
+  GREEN: '#00a832',
 }

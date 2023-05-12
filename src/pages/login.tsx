@@ -9,6 +9,7 @@ import Button from '../components/common/button'
 import { useRegisterUserMutation } from '../services/register'
 import db from '../lib/async-storage'
 import errType from '../constants/error-messages'
+import inputRules from '../constants/input-rules'
 
 const { height, width } = Dimensions.get('screen')
 
@@ -100,7 +101,12 @@ export default function Login({ navigation }: LoginProps) {
           <View style={styles.titleWrapper}>
             <Text style={styles.title}>Welcome,</Text>
             <Text style={styles.question}>what is your name?</Text>
-            <Input placeholder="Your name..." value={textValue} onChangeText={setTextValue} />
+            <Input
+              placeholder="Your name..."
+              value={textValue}
+              onChangeText={setTextValue}
+              maxLength={inputRules.USER_NAME_MAX_LENGTH}
+            />
             <Button isLoading={mutationRegister.isLoading} text="Start now!" onPress={onSubmit} />
           </View>
         </View>
