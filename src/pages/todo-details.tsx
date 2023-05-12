@@ -7,13 +7,27 @@ import Button from '../components/common/button'
 import NoData from '../components/common/no-data'
 import TodoOverview from '../components/data-entry/todo-overview'
 import TodoListCard from '../components/data-entry/todo-list-card'
+import ModalInput from '../components/form/modal-input'
+import { useCreateTodoListMutation } from '../services/todo'
 
 const { height, width } = Dimensions.get('screen')
 
 export default function TodoDetail({ navigation, route }: TodoDetailProps) {
   const data = route.params?.todo
-  console.log(data)
+  const [createTodoList, createTodoListMutation] = useCreateTodoListMutation()
 
+  const [todoName, setTodoName] = useState(data.name)
+  const [todoList, setTodoList] = useState(data.todoList)
+  const [textValue, setTextValue] = useState('')
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const toggleModal = () => setIsModalVisible((e) => !e)
+
+  const onSubmitInput = async () => {
+    //
+  }
+
+  console.log(data)
   return (
     <View style={styles.container}>
       <TodoOverview name={data.name} createdAt={data.createdAt} />
@@ -28,6 +42,14 @@ export default function TodoDetail({ navigation, route }: TodoDetailProps) {
         <Button text="Delete this Todo" isLoading={false} type="danger" width="50%" />
         <Button text="Add Todo List" isLoading={false} width="50%" />
       </View>
+      <ModalInput
+        isVisible={isModalVisible}
+        value={textValue}
+        onChangeText={setTextValue}
+        toggleModal={toggleModal}
+        onSubmit={onSubmitInput}
+        isLoading={createTodoListMutation.isLoading}
+      />
     </View>
   )
 }
