@@ -15,7 +15,7 @@ export default function TodoCard(item: ResponseGetTodos) {
     const allTodoList = item.todoList.length
     const doneTodoList = item.todoList.filter((item) => item.isDone).length
 
-    if (allTodoList === 0) {
+    if (doneTodoList === 0) {
       return '0'
     }
 
