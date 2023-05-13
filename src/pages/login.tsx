@@ -33,7 +33,7 @@ export default function Login({ navigation }: LoginProps) {
     const getDb = async () => {
       const id = await db({ key: 'userid', state: 'GET', data: '' })
       if (id) {
-        // navigation.replace('Main')
+        navigation.replace('Main')
       } else {
         setIsPreload(false)
       }
