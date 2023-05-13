@@ -1,6 +1,8 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, Dimensions } from 'react-native'
 import colors from '../../constants/colors'
+
+const { width } = Dimensions.get('screen')
 
 export default function NoData() {
   return (
@@ -13,6 +15,7 @@ export default function NoData() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width,
     justifyContent: 'center',
     alignItems: 'center',
   },

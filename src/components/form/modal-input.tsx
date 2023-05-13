@@ -13,12 +13,23 @@ type Props = {
   onChangeText: (text: string) => void
   onSubmit: () => Promise<void>
   isLoading: boolean
+  placeholder: string
+  onModalHide?: () => void
 }
 
 const { width, height } = Dimensions.get('screen')
 
 export default function ModalInput(props: Props) {
-  const { toggleModal, isVisible, value, onChangeText, onSubmit, isLoading } = props
+  const {
+    toggleModal,
+    isVisible,
+    value,
+    onChangeText,
+    onSubmit,
+    isLoading,
+    placeholder,
+    onModalHide,
+  } = props
 
   return (
     <Modal
@@ -29,6 +40,7 @@ export default function ModalInput(props: Props) {
       useNativeDriver
       deviceHeight={height}
       deviceWidth={width}
+      onModalHide={onModalHide}
     >
       <View
         style={{
@@ -41,7 +53,7 @@ export default function ModalInput(props: Props) {
           onChangeText={onChangeText}
           value={value}
           borderless
-          placeholder="Create todo"
+          placeholder={placeholder}
           maxLength={inputRules.TODO_NAME_MAX_LENGTH}
         />
         <Button onPress={onSubmit} text="Save" isLoading={isLoading} />

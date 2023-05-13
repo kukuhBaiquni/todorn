@@ -4,7 +4,7 @@ import React from 'react'
 import Login from './pages/login'
 import Main from './pages/main'
 import TodoDetail from './pages/todo-details'
-import { ResponseGetTodos } from './services/todo'
+import { ResponseGetTodos } from './types/todo'
 
 export type NavigationParams = {
   Login: undefined

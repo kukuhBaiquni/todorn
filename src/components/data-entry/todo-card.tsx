@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import colors from '../../constants/colors'
 import commonFormat from '../../helpers/date-format'
-import { ResponseGetTodos } from '../../services/todo'
+import { ResponseGetTodos } from '../../types/todo'
 import { useNavigation, NavigationProp } from '@react-navigation/native'
 import { NavigationParams } from '../../navigation'
 

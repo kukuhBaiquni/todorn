@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -37,10 +37,18 @@ export default function Main({ route }: MainProps) {
   const [createTodo, createTodoMutation] = useCreateTodoMutation()
 
   useEffect(() => {
+    const onBackPress = () => {
+      showAlert({ func: () => BackHandler.exitApp() })
+      return true
+    }
+
     if (isFocused) {
-      BackHandler.addEventListener('hardwareBackPress', showAlert)
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
     } else {
-      BackHandler.removeEventListener('hardwareBackPress', showAlert)
+      BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onBackPress)
     }
   }, [isFocused])
 
@@ -64,10 +72,8 @@ export default function Main({ route }: MainProps) {
 
   useEffect(() => {
     // When create todo process is success it will run this code
-    const isCreateTodoError =
-      !createTodoMutation.isSuccess && createTodoMutation.isError && !createTodoMutation.isLoading
-    const isSuccess =
-      createTodoMutation.isSuccess && !createTodoMutation.isError && !createTodoMutation.isLoading
+    const isCreateTodoError = createTodoMutation.isError && !createTodoMutation.isLoading
+    const isSuccess = createTodoMutation.isSuccess && !createTodoMutation.isLoading
     if (isSuccess) {
       setTextValue('')
       setIsModalVisible(false)
@@ -119,6 +125,7 @@ export default function Main({ route }: MainProps) {
       </TouchableOpacity>
       <ModalInput
         isVisible={isModalVisible}
+        placeholder="Create todo"
         value={textValue}
         onChangeText={setTextValue}
         toggleModal={toggleModal}

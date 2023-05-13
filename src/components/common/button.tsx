@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-nat
 import colors from '../../constants/colors'
 
 type Props = {
-  onPress?: () => Promise<void>
+  onPress?: () => Promise<void> | void
   text: string
   isLoading: boolean
   type?: 'primary' | 'danger'

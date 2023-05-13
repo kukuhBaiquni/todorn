@@ -7,4 +7,5 @@ export default {
   GRAY: '#b0b0b0',
   SEMI_WHITE: '#e0e0e0',
   GREEN: '#00a832',
+  ORANGE: '#d98921',
 }

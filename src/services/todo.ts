@@ -5,23 +5,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import env from '../env'
-
-export type TodoListItem = {
-  name: string
-  isDone: boolean
-  createdAt: string
-  _id: string
-}
-
-export type ResponseGetTodos = {
-  createdAt: string
-  name: string
-  owner: string
-  todoList: TodoListItem[]
-  updatedAt: string
-  __v: number
-  _id: string
-}
+import { ResponseGetTodos } from '../types/todo'
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',
@@ -58,7 +42,7 @@ export const todoApi = createApi({
       transformErrorResponse: (res: any) => res.status,
     }),
     deleteTodo: builder.mutation({
-      query: ({ todoId }: { todoId: string; name: string }) => ({
+      query: ({ todoId }: { todoId: string }) => ({
         url: `/todo/${todoId}`,
         method: 'DELETE',
       }),
@@ -86,7 +70,7 @@ export const todoApi = createApi({
         todoListId: string
         name: string
       }) => ({
-        url: `/todo/todo-list/${todoId}/${todoListId}`,
+        url: `/todo/${todoId}/${todoListId}`,
         method: 'POST',
         body: { todoId, name },
       }),
@@ -96,8 +80,25 @@ export const todoApi = createApi({
     }),
     deleteTodoList: builder.mutation({
       query: ({ todoId, todoListId }: { todoId: string; todoListId: string }) => ({
-        url: `/todo/todo-list/${todoId}/${todoListId}`,
+        url: `/todo/${todoId}/${todoListId}`,
         method: 'DELETE',
+      }),
+      invalidatesTags: ['todos'],
+      transformResponse: (res: any) => res.data,
+      transformErrorResponse: (res: any) => res.status,
+    }),
+    updateStatusTodoList: builder.mutation({
+      query: ({
+        todoId,
+        todoListId,
+        isDone,
+      }: {
+        todoId: string
+        todoListId: string
+        isDone: boolean
+      }) => ({
+        url: `/todo/${todoId}/${todoListId}/${isDone.toString()}`,
+        method: 'PATCH',
       }),
       invalidatesTags: ['todos'],
       transformResponse: (res: any) => res.data,
@@ -114,4 +115,5 @@ export const {
   useCreateTodoListMutation,
   useUpdateTodoListMutation,
   useDeleteTodoListMutation,
+  useUpdateStatusTodoListMutation,
 } = todoApi
