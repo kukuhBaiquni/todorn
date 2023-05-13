@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useWindowDimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { useWindowDimensions, ActivityIndicator, View } from 'react-native'
 import { TabView, TabBar, TabBarProps, Route } from 'react-native-tab-view'
 import TodoListDataView from './todo-list-data-view'
 import { TodoListItem } from '../../types/todo'
@@ -7,14 +7,16 @@ import { TodoListItem } from '../../types/todo'
 import colors from '../../constants/colors'
 
 type Props = {
-  allTodos: TodoListItem[]
-  doneTodos: TodoListItem[]
-  pendingTodos: TodoListItem[]
+  allTodoList: TodoListItem[]
+  doneTodoList: TodoListItem[]
+  pendingTodoList: TodoListItem[]
   todoId: string
 }
 
-export default function TodoTabView({ allTodos, doneTodos, pendingTodos, todoId }: Props) {
+export default function TodoTabView({ allTodoList, doneTodoList, pendingTodoList, todoId }: Props) {
   const layout = useWindowDimensions()
+
+  const [showLoader, setShowLoader] = useState(true)
 
   const [index, setIndex] = useState(0)
   const [routes] = useState([
@@ -26,14 +28,31 @@ export default function TodoTabView({ allTodos, doneTodos, pendingTodos, todoId 
   const renderScene = ({ route }: { route: { key: string; title: string } }) => {
     switch (route.key) {
       case 'all':
-        return <TodoListDataView data={allTodos} todoId={todoId} />
+        return <TodoListDataView data={allTodoList} todoId={todoId} />
       case 'done':
-        return <TodoListDataView data={doneTodos} todoId={todoId} />
+        return <TodoListDataView data={doneTodoList} todoId={todoId} />
       case 'pending':
-        return <TodoListDataView data={pendingTodos} todoId={todoId} />
+        return <TodoListDataView data={pendingTodoList} todoId={todoId} />
       default:
         return null
     }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false)
+    }, 300)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [])
+
+  if (showLoader) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color={colors.BLUE} size="large" />
+      </View>
+    )
   }
 
   return (
@@ -45,9 +64,9 @@ export default function TodoTabView({ allTodos, doneTodos, pendingTodos, todoId 
       renderTabBar={(props) => (
         <CustomTabBar
           {...props}
-          all={allTodos.length}
-          done={doneTodos.length}
-          pending={pendingTodos.length}
+          all={allTodoList.length}
+          done={doneTodoList.length}
+          pending={pendingTodoList.length}
         />
       )}
     />
@@ -69,7 +88,6 @@ const CustomTabBar = (props: TabBarProps<Route> & Todos) => {
       inactiveColor={colors.GRAY}
       labelStyle={{ color: colors.BLUE }}
       getLabelText={({ route }) => {
-        console.log(props, route)
         const routeKey: 'all' | 'done' | 'pending' | string = route.key
         const count =
           {

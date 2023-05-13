@@ -71,7 +71,7 @@ export const todoApi = createApi({
         name: string
       }) => ({
         url: `/todo/${todoId}/${todoListId}`,
-        method: 'POST',
+        method: 'PUT',
         body: { todoId, name },
       }),
       invalidatesTags: ['todos'],

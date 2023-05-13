@@ -33,7 +33,6 @@ function getStyles(isLoading: boolean, isDanger: boolean, width: string | number
       alignItems: 'center',
       borderRadius: width ? 0 : 5,
       height: 50,
-      marginTop: 15,
       width: width,
     },
     buttonText: {

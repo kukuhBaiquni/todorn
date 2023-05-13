@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import commonFormat from '../../helpers/date-format'
 import colors from '../../constants/colors'
-import { useNavigation } from '@react-navigation/native'
+import TodoTabViewContext from '../../context/todo-tab-view-context'
 
 type Props = {
+  todoId: string
   name: string
   createdAt: string
 }
 
 const { width } = Dimensions.get('screen')
 
-export default function TodoOverview({ name, createdAt }: Props) {
+export default function TodoOverview({ name, createdAt, todoId }: Props) {
   const { goBack } = useNavigation()
+  const ctx = useContext(TodoTabViewContext)
 
   return (
     <View style={styles.overviewWrapper}>
@@ -23,14 +26,12 @@ export default function TodoOverview({ name, createdAt }: Props) {
       </Pressable>
       <View style={styles.overviewBanner}>
         <View style={styles.nameWithAction}>
-          <Text style={styles.todoNameText}>
-            {name}{' '}
-            <Pressable>
-              <Text style={styles.editText}>EDIT</Text>
-            </Pressable>
-          </Text>
+          <Text style={styles.todoNameText}>{name} </Text>
         </View>
         <Text style={styles.dateCreatedText}>Created At {commonFormat(new Date(createdAt))}</Text>
+        <Pressable onPress={() => ctx?.onOpenModal(todoId, 'updateTodo')}>
+          <Text style={styles.editText}>EDIT</Text>
+        </Pressable>
       </View>
     </View>
   )

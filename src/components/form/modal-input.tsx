@@ -46,13 +46,14 @@ export default function ModalInput(props: Props) {
         style={{
           height: height * 0.2,
           backgroundColor: colors.WHITE,
-          paddingHorizontal: 10,
+          padding: 10,
         }}
       >
         <Input
           onChangeText={onChangeText}
           value={value}
           borderless
+          autoFocus
           placeholder={placeholder}
           maxLength={inputRules.TODO_NAME_MAX_LENGTH}
         />

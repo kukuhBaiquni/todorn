@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useContext, memo } from 'react'
 import { View, Text, StyleSheet, Dimensions, Pressable, ActivityIndicator } from 'react-native'
 import colors from '../../constants/colors'
 import commonFormat from '../../helpers/date-format'
@@ -6,11 +6,13 @@ import { TodoListItem } from '../../types/todo'
 import { useDeleteTodoListMutation, useUpdateStatusTodoListMutation } from '../../services/todo'
 import { useIsFocused } from '@react-navigation/native'
 import showAlert from '../../helpers/show-alert'
+import TodoTabViewContext from '../../context/todo-tab-view-context'
 
 const { width } = Dimensions.get('screen')
 
-export default function TodoListCard(props: TodoListItem & { todoId: string }) {
+export default memo(function TodoListCard(props: TodoListItem & { todoId: string }) {
   const { name, isDone, createdAt, todoId, _id } = props
+  const ctx = useContext(TodoTabViewContext)
   const isFocused = useIsFocused()
   const styles = getStyles(isDone)
 
@@ -36,9 +38,11 @@ export default function TodoListCard(props: TodoListItem & { todoId: string }) {
       {isFocused && (
         <Fragment>
           <View style={styles.todoListOverview}>
-            <Text style={styles.todoListNameText}>
-              {name} <Text style={styles.editText}>EDIT</Text>
-            </Text>
+            <Pressable onPress={() => ctx?.onOpenModal(_id, 'updateTodoList')}>
+              <Text style={styles.todoListNameText}>
+                {name} <Text style={styles.editText}>EDIT</Text>
+              </Text>
+            </Pressable>
             <Text style={styles.dateText}>{commonFormat(new Date(createdAt))}</Text>
             <Text style={styles.statusText}>{isDone ? 'Done' : 'Pending'}</Text>
           </View>
@@ -62,7 +66,7 @@ export default function TodoListCard(props: TodoListItem & { todoId: string }) {
       )}
     </View>
   )
-}
+})
 
 function getStyles(isDone: boolean) {
   return StyleSheet.create({

@@ -12,6 +12,7 @@ type Props = {
   value: string
   placeholder: string
   maxLength?: number
+  autoFocus?: boolean
 }
 
 export default function Input(props: Props) {
@@ -25,13 +26,14 @@ export default function Input(props: Props) {
     value,
     placeholder,
     maxLength,
+    autoFocus,
   } = props
   const styles = getStyles(borderless)
 
   return (
     <View>
       <TextInput
-        placeholderTextColor={borderless ? colors.SEMI_WHITE : colors.BLACK}
+        placeholderTextColor={borderless ? colors.GRAY : colors.BLACK}
         style={styles.textInput}
         cursorColor={colors.BLACK}
         placeholder={placeholder}
@@ -42,6 +44,7 @@ export default function Input(props: Props) {
         keyboardType="visible-password"
         onSubmitEditing={onEnter}
         onBlur={onBlur}
+        autoFocus={autoFocus}
         onChangeText={onChangeText}
         value={value || ''}
       />
@@ -60,8 +63,8 @@ function getStyles(borderless: boolean | undefined) {
       borderRadius: borderless ? 0 : 5,
       fontSize: borderless ? 24 : 16,
       paddingHorizontal: 12,
-      paddingVertical: borderless ? 16 : 8,
-      backgroundColor: borderless ? colors.WHITE : 'transparent',
+      paddingVertical: borderless ? 12 : 8,
+      backgroundColor: borderless ? colors.SEMI_WHITE : 'transparent',
     },
     errorMessage: {
       color: colors.RED,

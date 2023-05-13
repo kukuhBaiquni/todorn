@@ -1,10 +1,10 @@
-import React, { Fragment, useRef } from 'react'
+import React, { Fragment, useRef, memo } from 'react'
 import NoData from '../common/no-data'
 import { ScrollView, View } from 'react-native'
 import TodoListCard from './todo-list-card'
 import { TodoListItem } from '../../types/todo'
 
-export default function TodoListDataView({
+export default memo(function TodoListDataView({
   data,
   todoId,
 }: {
@@ -35,4 +35,4 @@ export default function TodoListDataView({
       )}
     </Fragment>
   )
-}
+})
