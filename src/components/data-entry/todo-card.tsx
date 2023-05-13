@@ -9,7 +9,6 @@ import ProgressBar from '../common/progress-bar'
 
 export default function TodoCard(item: ResponseGetTodos) {
   const { navigate } = useNavigation<NavigationProp<NavigationParams>>()
-  console.log(item)
 
   const percentage = useMemo(() => {
     const allTodoList = item.todoList.length
